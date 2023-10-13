@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Upload a file or directory to the internet and display the URL in the terminal
+# Usage: upload <file|directory>
+#        ... | upload <file_name>
+#
+# Author: Nathan Woodburn
+
+
 upload() {
     if [ $# -eq 0 ]; then
         echo "No arguments specified."
