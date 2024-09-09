@@ -27,6 +27,7 @@ This script is used for copying the contents of a file to the clipboard.
 ### Usage
 ```sh
 copy <file>
+... | copy
 ```
 
 ### Dependencies
