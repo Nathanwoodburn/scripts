@@ -50,6 +50,9 @@ brave=""
 
 # Loop through each player and check its status
 for player in $players; do
+    if [ "$verbose" -eq 1 ]; then
+        echo "Checking player $player"
+    fi
     status=$(playerctl -p "$player" status 2>/dev/null)
     # Check if player name contains brave
     if [[ "$player" == *"brave"* ]]; then
@@ -60,6 +63,9 @@ for player in $players; do
     fi
 
     if [[ "$status" == "Playing" || "$status" == "Paused" ]]; then
+        if [[ $verbose -eq 1 ]]; then
+            echo "Player $player is active"
+        fi
         active_players+=("$player:$status")
     fi
 done
@@ -77,6 +83,10 @@ truncate_string() {
 
 # Check how many active players we found
 active_count=${#active_players[@]}
+
+if [[ $verbose -eq 1 ]]; then
+    echo "Active players: $active_count"
+fi
 
 if [ "$active_count" -eq 1 ]; then
     # If exactly one player is active, print its metadata
@@ -123,7 +133,9 @@ elif [ "$active_count" -gt 1 ]; then
                 truncated_artist=$(truncate_string "$artist" $MAX_ARTIST_LENGTH)
                 output+="🎵 $truncated_title [$truncated_artist]"
             fi
-
+            if [ "$verbose" -eq 1 ]; then
+                echo "Player $player: $title - $artist"
+            fi
         fi
     done
     if [ "$playing_count" -eq 1 ]; then
@@ -142,8 +154,9 @@ elif [ "$active_count" -gt 1 ]; then
             fi
         else
             brave_status=$(playerctl -p "$brave" status 2>/dev/null)
-            title=$(playerctl -p "$brave" metadata --format '{{title}}')
-            artist=$(playerctl -p "$brave" metadata --format '{{artist}}')
+
+            title=$(playerctl -p "$brave" metadata --format '{{title}}' 2>/dev/null)
+            artist=$(playerctl -p "$brave" metadata --format '{{artist}}' 2>/dev/null)
             # Print the title and artist
             if [ "$verbose" -eq 1 ]; then
                 echo "Brave is playing"
@@ -153,6 +166,11 @@ elif [ "$active_count" -gt 1 ]; then
 
             # Check if artist is empty
             if [ -z "$artist" ]; then
+                if [ -z "$title" ]; then
+                    echo "Multiple players playing"
+                    exit 0
+                fi
+
                 truncated_title=$(truncate_string "$title" $(($MAX_TITLE_LENGTH + $MAX_ARTIST_LENGTH)))
                 if [ "$brave_status" == "Playing" ]; then
                     echo "🎵 $truncated_title"
