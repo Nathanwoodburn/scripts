@@ -60,7 +60,13 @@ if [ "$1" = "short" ]; then
     # Check if connected
     output=$(tailscale status)
     if [[ "$output" == *"stopped"* ]]; then
-        echo -e "${RED}󰕥${NC}"
+        echo -e "${RED}󰦞${NC}"
+        exit 0
+    fi
+    # Get line for nwtux
+    device=$(echo "$output" | grep "nwtux")
+    if [[ "$device" == *"offline"* ]]; then
+        echo -e "${RED}󰦞${NC}"
         exit 0
     fi
         
@@ -71,7 +77,7 @@ if [ "$1" = "short" ]; then
         echo -e "${GREEN}󰕥${NC}"
         exit 0
     fi
-    echo -e "${BLUE}󰕥${NC} $hostname"
+    echo -e "${BLUE}󰻌${NC} $hostname"
     exit 0
 fi
 
