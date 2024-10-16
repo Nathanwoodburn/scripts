@@ -97,9 +97,9 @@ if [ "$active_count" -eq 1 ]; then
         title=$(playerctl -p "$brave" metadata --format '{{title}}')
         truncated_title=$(truncate_string "$title" $(($MAX_TITLE_LENGTH + $MAX_ARTIST_LENGTH)))
         if [ "$status" == "Paused" ]; then
-            echo "🎵 $truncated_title (Paused)"
+            echo "󰝚 $truncated_title (Paused)"
         else
-            echo "🎵 $truncated_title"
+            echo "󰝚 $truncated_title"
         fi
         exit 0
     fi
@@ -108,9 +108,9 @@ if [ "$active_count" -eq 1 ]; then
     truncated_artist=$(truncate_string "$artist" $MAX_ARTIST_LENGTH)
 
     if [ "$status" == "Paused" ]; then
-        echo "🎵 $truncated_title [$truncated_artist] (Paused)"
+        echo "󰝚 $truncated_title [$truncated_artist] (Paused)"
     else
-        echo "🎵 $truncated_title [$truncated_artist]"
+        echo "󰝚 $truncated_title [$truncated_artist]"
     fi
 
 elif [ "$active_count" -gt 1 ]; then
@@ -126,12 +126,12 @@ elif [ "$active_count" -gt 1 ]; then
             if [ "$title" == "Vilos" ]; then
                 title=$(playerctl -p "$brave" metadata --format '{{title}}')
                 truncated_title=$(truncate_string "$title" $(($MAX_TITLE_LENGTH + $MAX_ARTIST_LENGTH)))
-                output+="🎵 $truncated_title"
+                output+="󰝚 $truncated_title"
             else
                 artist=$(playerctl -p "$player" metadata --format '{{artist}}')
                 truncated_title=$(truncate_string "$title" $MAX_TITLE_LENGTH)
                 truncated_artist=$(truncate_string "$artist" $MAX_ARTIST_LENGTH)
-                output+="🎵 $truncated_title [$truncated_artist]"
+                output+="󰝚 $truncated_title [$truncated_artist]"
             fi
             if [ "$verbose" -eq 1 ]; then
                 echo "Player $player: $title - $artist"
@@ -173,16 +173,16 @@ elif [ "$active_count" -gt 1 ]; then
 
                 truncated_title=$(truncate_string "$title" $(($MAX_TITLE_LENGTH + $MAX_ARTIST_LENGTH)))
                 if [ "$brave_status" == "Playing" ]; then
-                    echo "🎵 $truncated_title"
+                    echo "󰝚 $truncated_title"
                 else
-                    echo "🎵 $truncated_title (Paused)"
+                    echo "󰝚 $truncated_title (Paused)"
                 fi
                 exit 0
             fi
 
             truncated_title=$(truncate_string "$title" $MAX_TITLE_LENGTH)
             truncated_artist=$(truncate_string "$artist" $MAX_ARTIST_LENGTH)
-            output="🎵 $truncated_title [$truncated_artist]"
+            output="󰝚 $truncated_title [$truncated_artist]"
             if [ "$brave_status" == "Playing" ]; then
                 echo "$output"
             else
@@ -199,8 +199,8 @@ else
     fi
 
     brave_status=$(playerctl -p "$brave" status 2>/dev/null)
-    title=$(playerctl -p "$brave" metadata --format '{{title}}')
-    artist=$(playerctl -p "$brave" metadata --format '{{artist}}')
+    title=$(playerctl -p "$brave" metadata --format '{{title}}' 2>/dev/null)
+    artist=$(playerctl -p "$brave" metadata --format '{{artist}}' 2>/dev/null)
     # Print the title and artist
     if [ "$verbose" -eq 1 ]; then
         echo "Brave is playing"
@@ -211,21 +211,25 @@ else
     # Check if artist is empty
     if [ -z "$artist" ]; then
         if [ -z "$title" ]; then
+            if [ "$verbose" -eq 1 ]; then
+                echo "No metadata found"
+            fi
+            echo ""
             exit 0
         fi
 
         truncated_title=$(truncate_string "$title" $(($MAX_TITLE_LENGTH + $MAX_ARTIST_LENGTH)))
         if [ "$brave_status" == "Playing" ]; then
-            echo "🎵 $truncated_title"
+            echo "󰝚 $truncated_title"
         else
-            echo "🎵 $truncated_title (Paused)"
+            echo "󰝚 $truncated_title (Paused)"
         fi
         exit 0
     fi
 
     truncated_title=$(truncate_string "$title" $MAX_TITLE_LENGTH)
     truncated_artist=$(truncate_string "$artist" $MAX_ARTIST_LENGTH)
-    output="🎵 $truncated_title [$truncated_artist]"
+    output="󰝚 $truncated_title [$truncated_artist]"
     if [ "$brave_status" == "Playing" ]; then
         echo "$output"
     else
