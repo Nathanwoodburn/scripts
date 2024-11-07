@@ -44,9 +44,13 @@ if ! command -v playerctl &>/dev/null; then
 fi
 
 # Get all player names and statuses
-players=$(playerctl -a -l)
+players=$(playerctl -a -l 2>/dev/null)
 active_players=()
 brave=""
+
+exlude=(
+    "Messenger"
+)
 
 # Loop through each player and check its status
 for player in $players; do
@@ -61,6 +65,23 @@ for player in $players; do
         fi
         brave=$player
     fi
+
+    title=$(playerctl -p "$player" metadata --format '{{title}}' 2>/dev/null)
+    if [ "$verbose" -eq 1 ]; then
+        echo "Title: $title"
+    fi
+    
+    # If title contains any string in the exclude array, skip the player
+    
+    for exclude in "${exlude[@]}"; do
+        if [[ "$title" == *"$exclude"* ]]; then
+            if [ "$verbose" -eq 1 ]; then
+                echo "Excluding player $player"
+            fi
+            continue 2
+        fi
+    done
+
 
     if [[ "$status" == "Playing" || "$status" == "Paused" ]]; then
         if [[ $verbose -eq 1 ]]; then
@@ -195,6 +216,7 @@ elif [ "$active_count" -gt 1 ]; then
 else
     # Check if brave is not empty
     if [ -z "$brave" ]; then
+        echo ""
         exit 0
     fi
 
@@ -224,6 +246,7 @@ else
         else
             echo "󰝚 $truncated_title (Paused)"
         fi
+        echo ""
         exit 0
     fi
 
